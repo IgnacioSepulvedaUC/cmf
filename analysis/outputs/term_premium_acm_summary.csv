@@ -1,0 +1,4 @@
+segmento,curva,obs_mensuales,muestra_inicio,muestra_fin,tenor_anios,tp30_ultimo_pp,tp30_ultimo_bps,tp30_media_pp,tp30_min_pp,tp30_max_pp,var_explicada,eig_max_Q,rmse_precio_bps
+Soberano,Gob CERO Pesos,127,2016-01-31,2026-07-31,30.0,-1.01,-101.0,-1.111,-1.304,-0.927,0.9993,1.0046,4.73
+Bancario,CORP Bancarios AAA,127,2016-01-31,2026-07-31,30.0,-2.609,-260.9,-2.557,-2.888,-2.182,0.98856,0.9955,21.5
+Corporativo,CORP AAA,99,2016-01-31,2026-07-31,30.0,-1.116,-111.6,-1.379,-2.235,-0.705,0.98223,0.9997,25.11
