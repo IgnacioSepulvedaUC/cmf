@@ -1,0 +1,314 @@
+<title>Term premium ACM — soberanos, bancarios y corporativos</title>
+<style>
+  :root{
+    --bg:#f7f9fb; --panel:#ffffff; --ink:#141a21; --muted:#5c6773;
+    --line:#e2e8ef; --line-soft:#eef2f6;
+    --sob:#2f5fe0; --ban:#0f9d78; --corp:#d8483a;
+    --sob-soft:#2f5fe01a; --ban-soft:#0f9d781a; --corp-soft:#d8483a1a;
+    --neutral-grid:#c9d3dd;
+    --serif:"Iowan Old Style","Charter","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"SF Mono","JetBrains Mono","Menlo",Consolas,monospace;
+    --maxw:1020px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d1219; --panel:#141c26; --ink:#e8edf3; --muted:#94a2b2;
+      --line:#243141; --line-soft:#1b2634;
+      --sob:#6f96ff; --ban:#3fc9a2; --corp:#f2705f;
+      --sob-soft:#6f96ff1f; --ban-soft:#3fc9a21f; --corp-soft:#f2705f1f;
+      --neutral-grid:#33404f;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f7f9fb; --panel:#ffffff; --ink:#141a21; --muted:#5c6773;
+    --line:#e2e8ef; --line-soft:#eef2f6;
+    --sob:#2f5fe0; --ban:#0f9d78; --corp:#d8483a;
+    --sob-soft:#2f5fe01a; --ban-soft:#0f9d781a; --corp-soft:#d8483a1a;
+    --neutral-grid:#c9d3dd;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1219; --panel:#141c26; --ink:#e8edf3; --muted:#94a2b2;
+    --line:#243141; --line-soft:#1b2634;
+    --sob:#6f96ff; --ban:#3fc9a2; --corp:#f2705f;
+    --sob-soft:#6f96ff1f; --ban-soft:#3fc9a21f; --corp-soft:#f2705f1f;
+    --neutral-grid:#33404f;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:clamp(20px,4vw,56px) clamp(16px,4vw,40px) 64px}
+
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 14px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,46px);
+    line-height:1.06;letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
+  .lede{font-size:clamp(15px,1.7vw,18px);color:var(--muted);max-width:60ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .rule{height:1px;background:var(--line);border:0;margin:32px 0}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:4px 0 0}
+  @media (max-width:720px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:20px 20px 18px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c)}
+  .card .seg{font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    font-weight:700;color:var(--c);margin:0 0 2px}
+  .card .curva{font-size:12.5px;color:var(--muted);margin:0 0 16px}
+  .card .big{font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:clamp(30px,4.4vw,40px);font-weight:600;line-height:1;color:var(--ink);
+    display:flex;align-items:baseline;gap:8px}
+  .card .big .u{font-size:15px;color:var(--muted);font-weight:500}
+  .card .bps{font-family:var(--mono);font-size:13px;color:var(--c);margin-top:6px;font-weight:600}
+  .card .foot{display:flex;gap:18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .card .foot div{font-size:11.5px;color:var(--muted);line-height:1.3}
+  .card .foot b{display:block;font-family:var(--mono);font-size:14px;color:var(--ink);
+    font-variant-numeric:tabular-nums;font-weight:600;margin-top:2px}
+
+  .chartcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:22px 22px 16px;margin-top:16px}
+  .chart-head{display:flex;justify-content:space-between;align-items:flex-start;
+    flex-wrap:wrap;gap:12px;margin-bottom:6px}
+  .chart-head h2{font-family:var(--serif);font-size:20px;font-weight:600;margin:0}
+  .chart-head p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink);font-weight:500}
+  .legend i{width:22px;height:3px;border-radius:2px;background:var(--c);display:inline-block}
+  .chartwrap{width:100%;overflow-x:auto}
+  svg{display:block;width:100%;height:auto}
+  .gl{stroke:var(--line);stroke-width:1}
+  .zero{stroke:var(--neutral-grid);stroke-width:1.2;stroke-dasharray:4 4}
+  .axtx{fill:var(--muted);font-family:var(--mono);font-size:11px}
+  .axty{fill:var(--muted);font-family:var(--mono);font-size:11px}
+
+  h2.sec{font-family:var(--serif);font-size:22px;font-weight:600;margin:40px 0 4px}
+  .sec-sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+  thead th{text-align:right;font-weight:600;color:var(--muted);font-size:11.5px;
+    letter-spacing:.04em;text-transform:uppercase;padding:14px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  thead th:first-child{text-align:left}
+  tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);text-align:right;
+    font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  tbody td:first-child{text-align:left;font-family:var(--sans)}
+  tbody td .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:8px;vertical-align:middle}
+  .neg{color:var(--corp)}
+  @media (prefers-color-scheme:dark){.neg{color:var(--corp)}}
+
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-top:8px}
+  @media (max-width:720px){.grid2{grid-template-columns:1fr}}
+  .prose p{font-size:14.5px;color:var(--ink);margin:0 0 12px}
+  .prose p.m{color:var(--muted)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;position:relative;padding:0 0 14px 40px;font-size:14px;color:var(--ink)}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;
+    border-radius:7px;background:var(--sob-soft);color:var(--sob);font-family:var(--mono);font-weight:600;
+    font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.steps li b{font-weight:600}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--corp);
+    border-radius:10px;padding:16px 18px}
+  .callout h3{margin:0 0 6px;font-size:14px;font-weight:700;color:var(--corp);letter-spacing:.02em}
+  .callout p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.55}
+
+  code{font-family:var(--mono);font-size:12.5px;background:var(--line-soft);
+    padding:1px 6px;border-radius:5px;color:var(--ink)}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer code{background:none;padding:0}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">CMF · Curvas Chile · Ene 2016 – Jul 2026</p>
+  <h1>Term premium ACM en el tramo más largo</h1>
+  <p class="lede">Descomposición <b>Adrian–Crump–Moench</b> del premio por plazo a
+    <b>30 años</b> (10.800 días) para las curvas soberana, bancaria y corporativa.
+    Estimación mensual con 3 factores. Último dato: <b>31-jul-2026</b>.</p>
+
+  <hr class="rule">
+
+  <div class="cards">
+    <div class="card" style="--c:var(--sob)">
+      <p class="seg">Soberano</p>
+      <p class="curva">Gob CERO Pesos · cupón cero nominal</p>
+      <div class="big">−1,01<span class="u">pp</span></div>
+      <div class="bps">−101 bps</div>
+      <div class="foot">
+        <div>Media<b>−1,11</b></div>
+        <div>Rango<b>−1,30 / −0,93</b></div>
+        <div>Meses<b>127</b></div>
+      </div>
+    </div>
+    <div class="card" style="--c:var(--ban)">
+      <p class="seg">Bancario</p>
+      <p class="curva">CORP Bancarios AAA</p>
+      <div class="big">−2,61<span class="u">pp</span></div>
+      <div class="bps">−261 bps</div>
+      <div class="foot">
+        <div>Media<b>−2,56</b></div>
+        <div>Rango<b>−2,89 / −2,18</b></div>
+        <div>Meses<b>127</b></div>
+      </div>
+    </div>
+    <div class="card" style="--c:var(--corp)">
+      <p class="seg">Corporativo</p>
+      <p class="curva">CORP AAA</p>
+      <div class="big">−1,12<span class="u">pp</span></div>
+      <div class="bps">−112 bps</div>
+      <div class="foot">
+        <div>Media<b>−1,38</b></div>
+        <div>Rango<b>−2,24 / −0,71</b></div>
+        <div>Meses<b>99</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chartcard">
+    <div class="chart-head">
+      <div>
+        <h2>Premio por plazo a 30 años</h2>
+        <p>Puntos porcentuales, fin de mes. La línea punteada marca el cero.</p>
+      </div>
+      <div class="legend">
+        <span style="--c:var(--sob)"><i></i>Soberano</span>
+        <span style="--c:var(--ban)"><i></i>Bancario</span>
+        <span style="--c:var(--corp)"><i></i>Corporativo</span>
+      </div>
+    </div>
+    <div class="chartwrap"><svg id="chart" viewBox="0 0 960 430" role="img"
+      aria-label="Serie mensual del term premium a 30 años para las tres curvas"></svg></div>
+  </div>
+
+  <h2 class="sec">Resumen por curva</h2>
+  <p class="sec-sub">Estadísticos del premio a 30 años y diagnósticos del ajuste ACM.</p>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Segmento / curva</th>
+          <th>TP 30a (pp)</th>
+          <th>bps</th>
+          <th>Media</th>
+          <th>Mín</th>
+          <th>Máx</th>
+          <th>Var. expl.</th>
+          <th>Eig máx Q</th>
+          <th>RMSE (bps)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="--c:var(--sob)">
+          <td><span class="dot"></span>Soberano · Gob CERO Pesos</td>
+          <td class="neg">−1,01</td><td class="neg">−101</td>
+          <td>−1,11</td><td>−1,30</td><td>−0,93</td>
+          <td>0,9993</td><td>1,0046</td><td>4,7</td>
+        </tr>
+        <tr style="--c:var(--ban)">
+          <td><span class="dot"></span>Bancario · CORP Bancarios AAA</td>
+          <td class="neg">−2,61</td><td class="neg">−261</td>
+          <td>−2,56</td><td>−2,89</td><td>−2,18</td>
+          <td>0,9886</td><td>0,9955</td><td>21,5</td>
+        </tr>
+        <tr style="--c:var(--corp)">
+          <td><span class="dot"></span>Corporativo · CORP AAA</td>
+          <td class="neg">−1,12</td><td class="neg">−112</td>
+          <td>−1,38</td><td>−2,24</td><td>−0,71</td>
+          <td>0,9822</td><td>0,9997</td><td>25,1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h2 class="sec">Metodología</h2>
+      <p class="sec-sub">Estimador <code>nachometrics · ACM</code> sobre el panel CMF.</p>
+      <ol class="steps prose">
+        <li><b>Una cotización por día:</b> cierre oficial 13:45; en su defecto 09:40.</li>
+        <li><b>Frecuencia mensual</b> (fin de mes): ACM se estima clásicamente en datos mensuales y la iteración riesgo-neutral es intratable en diario.</li>
+        <li><b>Panel de tasas cero</b> 90 d – 10.800 d, de porcentaje a decimal anual y de días a años (días/360).</li>
+        <li><b>ACM con 3 factores PCA</b> (nivel/pendiente/curvatura); tasa corta = 3 meses.</li>
+      </ol>
+    </div>
+    <div>
+      <h2 class="sec">Lectura</h2>
+      <p class="sec-sub">Por qué el premio sale negativo.</p>
+      <div class="callout">
+        <h3>Premio negativo en el tramo largo</h3>
+        <p>La senda esperada de tasas cortas que implica la VAR física queda por
+          encima de la tasa larga observada, así que el tramo de 30 años cotiza con
+          premio negativo en los tres segmentos. Es un rasgo conocido en muestras
+          cortas con curvas largas planas o invertidas: el <b>nivel</b> es sensible al
+          número de factores y al largo de la muestra; el <b>signo</b> es más robusto.
+          Con 5 factores la VAR bajo Q se vuelve explosiva y el tramo largo diverge,
+          por eso se usan 3.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Fuente: panel de curvas CMF (<code>curva.parquet</code>). Estimador ACM: <code>nachometrics_unified</code>.</span>
+    <span>El corporativo tiene 99 meses (huecos ~2019–2021), visibles como cortes en la línea.</span>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"d": "2016-01", "s": -1.1, "b": -2.545, "c": -1.059}, {"d": "2016-02", "s": -1.106, "b": -2.541, "c": -0.983}, {"d": "2016-03", "s": -1.107, "b": -2.481, "c": -1.0}, {"d": "2016-04", "s": -1.11, "b": -2.578, "c": -1.054}, {"d": "2016-05", "s": -1.103, "b": -2.65, "c": -1.009}, {"d": "2016-06", "s": -1.11, "b": -2.684, "c": -0.976}, {"d": "2016-07", "s": -1.112, "b": -2.631, "c": -1.029}, {"d": "2016-08", "s": -1.127, "b": -2.57, "c": -1.381}, {"d": "2016-09", "s": -1.129, "b": -2.541, "c": -1.619}, {"d": "2016-10", "s": -1.129, "b": -2.554, "c": -1.705}, {"d": "2016-11", "s": -1.107, "b": -2.622, "c": -1.181}, {"d": "2016-12", "s": -1.131, "b": -2.609, "c": -1.411}, {"d": "2017-01", "s": -1.133, "b": -2.587, "c": -1.5}, {"d": "2017-02", "s": -1.135, "b": -2.596, "c": -1.545}, {"d": "2017-03", "s": -1.135, "b": -2.601, "c": -1.478}, {"d": "2017-04", "s": -1.142, "b": -2.639, "c": -1.479}, {"d": "2017-05", "s": -1.129, "b": -2.651, "c": -1.492}, {"d": "2017-06", "s": -1.125, "b": -2.693, "c": -1.484}, {"d": "2017-07", "s": -1.127, "b": -2.67, "c": -1.466}, {"d": "2017-08", "s": -1.117, "b": -2.603, "c": -1.389}, {"d": "2017-09", "s": -1.11, "b": -2.586, "c": -1.429}, {"d": "2017-10", "s": -1.105, "b": -2.637, "c": -1.14}, {"d": "2017-11", "s": -1.092, "b": -2.598, "c": -1.185}, {"d": "2017-12", "s": -1.098, "b": -2.601, "c": -1.336}, {"d": "2018-01", "s": -1.105, "b": -2.607, "c": -1.286}, {"d": "2018-02", "s": -1.1, "b": -2.603, "c": -1.262}, {"d": "2018-03", "s": -1.1, "b": -2.619, "c": -1.388}, {"d": "2018-04", "s": -1.103, "b": -2.63, "c": -1.36}, {"d": "2018-05", "s": -1.094, "b": -2.612, "c": -1.344}, {"d": "2018-06", "s": -1.089, "b": -2.658, "c": -1.299}, {"d": "2018-07", "s": -1.087, "b": -2.602, "c": -1.298}, {"d": "2018-08", "s": -1.09, "b": -2.582, "c": -1.286}, {"d": "2018-09", "s": -1.081, "b": -2.57, "c": -1.269}, {"d": "2018-10", "s": -1.08, "b": -2.613, "c": -1.39}, {"d": "2018-11", "s": -1.09, "b": -2.622, "c": -1.492}, {"d": "2018-12", "s": -1.104, "b": -2.639, "c": -1.664}, {"d": "2019-01", "s": -1.11, "b": -2.591, "c": -1.633}, {"d": "2019-02", "s": -1.113, "b": -2.56, "c": -1.712}, {"d": "2019-03", "s": -1.126, "b": -2.517, "c": -1.807}, {"d": "2019-04", "s": -1.131, "b": -2.544, "c": null}, {"d": "2019-05", "s": -1.158, "b": -2.542, "c": -1.998}, {"d": "2019-06", "s": -1.184, "b": -2.575, "c": null}, {"d": "2019-07", "s": -1.212, "b": -2.531, "c": null}, {"d": "2019-08", "s": -1.229, "b": -2.509, "c": null}, {"d": "2019-09", "s": -1.278, "b": -2.54, "c": null}, {"d": "2019-10", "s": -1.223, "b": -2.556, "c": null}, {"d": "2019-11", "s": -1.188, "b": -2.619, "c": null}, {"d": "2019-12", "s": -1.204, "b": -2.585, "c": null}, {"d": "2020-01", "s": -1.191, "b": -2.61, "c": null}, {"d": "2020-02", "s": -1.149, "b": -2.59, "c": null}, {"d": "2020-03", "s": -1.144, "b": -2.587, "c": null}, {"d": "2020-04", "s": -1.254, "b": -2.661, "c": null}, {"d": "2020-05", "s": -1.304, "b": -2.693, "c": null}, {"d": "2020-06", "s": -1.292, "b": -2.672, "c": null}, {"d": "2020-07", "s": -1.282, "b": -2.672, "c": null}, {"d": "2020-08", "s": -1.291, "b": -2.697, "c": null}, {"d": "2020-09", "s": -1.229, "b": -2.715, "c": null}, {"d": "2020-10", "s": -1.236, "b": -2.825, "c": null}, {"d": "2020-11", "s": -1.218, "b": -2.879, "c": null}, {"d": "2020-12", "s": -1.224, "b": -2.835, "c": null}, {"d": "2021-01", "s": -1.228, "b": -2.785, "c": null}, {"d": "2021-02", "s": -1.165, "b": -2.821, "c": null}, {"d": "2021-03", "s": -1.097, "b": -2.888, "c": -2.235}, {"d": "2021-04", "s": -1.174, "b": -2.798, "c": -1.96}, {"d": "2021-05", "s": -1.157, "b": -2.776, "c": null}, {"d": "2021-06", "s": -1.093, "b": -2.825, "c": null}, {"d": "2021-07", "s": -1.095, "b": -2.651, "c": null}, {"d": "2021-08", "s": -1.065, "b": -2.73, "c": null}, {"d": "2021-09", "s": -0.983, "b": -2.497, "c": null}, {"d": "2021-10", "s": -0.927, "b": -2.455, "c": null}, {"d": "2021-11", "s": -0.989, "b": -2.437, "c": -0.916}, {"d": "2021-12", "s": -1.016, "b": -2.495, "c": -1.152}, {"d": "2022-01", "s": -1.016, "b": -2.429, "c": -1.039}, {"d": "2022-02", "s": -1.013, "b": -2.29, "c": -1.318}, {"d": "2022-03", "s": -0.979, "b": -2.405, "c": -1.039}, {"d": "2022-04", "s": -0.947, "b": -2.366, "c": -1.216}, {"d": "2022-05", "s": -1.009, "b": -2.296, "c": -1.649}, {"d": "2022-06", "s": -1.013, "b": -2.346, "c": -1.529}, {"d": "2022-07", "s": -0.986, "b": -2.382, "c": -1.638}, {"d": "2022-08", "s": -0.975, "b": -2.233, "c": -1.701}, {"d": "2022-09", "s": -0.974, "b": -2.182, "c": -1.208}, {"d": "2022-10", "s": -1.041, "b": -2.225, "c": -1.439}, {"d": "2022-11", "s": -1.186, "b": -2.396, "c": -2.005}, {"d": "2022-12", "s": -1.203, "b": -2.339, "c": -1.99}, {"d": "2023-01", "s": -1.186, "b": -2.34, "c": -1.773}, {"d": "2023-02", "s": -1.142, "b": -2.396, "c": -1.534}, {"d": "2023-03", "s": -1.215, "b": -2.379, "c": -1.869}, {"d": "2023-04", "s": -1.177, "b": -2.311, "c": -1.679}, {"d": "2023-05", "s": -1.18, "b": -2.312, "c": -1.923}, {"d": "2023-06", "s": -1.217, "b": -2.445, "c": -1.866}, {"d": "2023-07", "s": -1.213, "b": -2.555, "c": -1.262}, {"d": "2023-08", "s": -1.147, "b": -2.403, "c": -1.268}, {"d": "2023-09", "s": -1.072, "b": -2.44, "c": -0.856}, {"d": "2023-10", "s": -1.002, "b": -2.468, "c": -0.705}, {"d": "2023-11", "s": -1.114, "b": -2.515, "c": -1.11}, {"d": "2023-12", "s": -1.166, "b": -2.515, "c": -1.225}, {"d": "2024-01", "s": -1.156, "b": -2.579, "c": -0.982}, {"d": "2024-02", "s": -1.107, "b": -2.561, "c": -0.811}, {"d": "2024-03", "s": -1.091, "b": -2.525, "c": -0.983}, {"d": "2024-04", "s": -1.016, "b": -2.584, "c": -0.748}, {"d": "2024-05", "s": -1.012, "b": -2.563, "c": -0.934}, {"d": "2024-06", "s": -0.969, "b": -2.587, "c": -0.987}, {"d": "2024-07", "s": -0.988, "b": -2.564, "c": -1.141}, {"d": "2024-08", "s": -1.062, "b": -2.544, "c": -1.334}, {"d": "2024-09", "s": -1.116, "b": -2.441, "c": -1.783}, {"d": "2024-10", "s": -1.06, "b": -2.448, "c": -1.771}, {"d": "2024-11", "s": -1.085, "b": -2.444, "c": -1.879}, {"d": "2024-12", "s": -1.046, "b": -2.501, "c": -1.529}, {"d": "2025-01", "s": -1.063, "b": -2.457, "c": -1.383}, {"d": "2025-02", "s": -1.012, "b": -2.512, "c": -1.159}, {"d": "2025-03", "s": -1.018, "b": -2.534, "c": -1.357}, {"d": "2025-04", "s": -1.042, "b": -2.639, "c": -1.308}, {"d": "2025-05", "s": -1.021, "b": -2.631, "c": -1.253}, {"d": "2025-06", "s": -1.1, "b": -2.596, "c": -1.327}, {"d": "2025-07", "s": -1.133, "b": -2.533, "c": -1.233}, {"d": "2025-08", "s": -1.096, "b": -2.547, "c": -1.183}, {"d": "2025-09", "s": -1.115, "b": -2.53, "c": -1.29}, {"d": "2025-10", "s": -1.132, "b": -2.557, "c": -1.522}, {"d": "2025-11", "s": -1.091, "b": -2.557, "c": -1.877}, {"d": "2025-12", "s": -1.079, "b": -2.55, "c": -1.567}, {"d": "2026-01", "s": -1.093, "b": -2.519, "c": -1.64}, {"d": "2026-02", "s": -1.075, "b": -2.549, "c": -1.424}, {"d": "2026-03", "s": -1.112, "b": -2.333, "c": -1.424}, {"d": "2026-04", "s": -1.046, "b": -2.435, "c": -1.282}, {"d": "2026-05", "s": -1.01, "b": -2.571, "c": -1.135}, {"d": "2026-06", "s": -1.018, "b": -2.64, "c": -1.225}, {"d": "2026-07", "s": -1.01, "b": -2.609, "c": -1.116}];
+const svg = document.getElementById('chart');
+const NS = 'http://www.w3.org/2000/svg';
+const W = 960, H = 430;
+const M = {t:16, r:54, b:34, l:44};
+const iw = W - M.l - M.r, ih = H - M.t - M.b;
+const css = getComputedStyle(document.documentElement);
+const col = {s:css.getPropertyValue('--sob').trim(), b:css.getPropertyValue('--ban').trim(), c:css.getPropertyValue('--corp').trim()};
+
+const n = DATA.length;
+const yMin = -3.0, yMax = 0.2;
+const x = i => M.l + (n<=1?0:i/(n-1))*iw;
+const y = v => M.t + (1-(v-yMin)/(yMax-yMin))*ih;
+
+function el(tag, attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+// y gridlines every 0.5
+for(let v=0; v>=-3.0-1e-9; v-=0.5){
+  const yy=y(v);
+  svg.appendChild(el('line',{x1:M.l,x2:M.l+iw,y1:yy,y2:yy,class:v===0?'zero':'gl'}));
+  const t=el('text',{x:M.l-8,y:yy+3,'text-anchor':'end',class:'axty'});
+  t.textContent=v.toFixed(1).replace('.',',');
+  svg.appendChild(t);
+}
+// x year ticks
+DATA.forEach((d,i)=>{
+  if(d.d.slice(5)==='01'){
+    const xx=x(i);
+    svg.appendChild(el('line',{x1:xx,x2:xx,y1:M.t,y2:M.t+ih,class:'gl'}));
+    const t=el('text',{x:xx,y:M.t+ih+18,'text-anchor':'middle',class:'axtx'});
+    t.textContent=d.d.slice(0,4);
+    svg.appendChild(t);
+  }
+});
+
+function drawSeries(key,color){
+  // build path segments, breaking on null
+  let dstr='', started=false, last=null, lasti=-1;
+  DATA.forEach((d,i)=>{
+    const v=d[key];
+    if(v==null){started=false;return;}
+    const px=x(i), py=y(v);
+    dstr += (started?'L':'M')+px.toFixed(1)+' '+py.toFixed(1)+' ';
+    started=true; last={x:px,y:py}; lasti=i;
+  });
+  svg.appendChild(el('path',{d:dstr,fill:'none',stroke:color,'stroke-width':2,
+    'stroke-linejoin':'round','stroke-linecap':'round'}));
+  if(last){
+    svg.appendChild(el('circle',{cx:last.x,cy:last.y,r:3.6,fill:color}));
+    svg.appendChild(el('circle',{cx:last.x,cy:last.y,r:6.5,fill:color,opacity:.18}));
+  }
+}
+drawSeries('b',col.b);
+drawSeries('c',col.c);
+drawSeries('s',col.s);
+</script>
