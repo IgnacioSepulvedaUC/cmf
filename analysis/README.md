@@ -62,6 +62,33 @@ export CURVE_PARQUET=/ruta/a/curva.parquet   # opcional
 python3 acm_term_premium.py
 ```
 
+## Analítica de renta fija (`rf_analytics.py` → `renta_fija_analytics.html`)
+
+Segundo entregable, página estática con datos precalculados en Python (sin conexión
+continua). `rf_analytics.py` genera `outputs/rf_data.json`, que se hardcodea en el HTML.
+
+1. **Return attribution** (bono cupón cero de plazo constante 10a por clase): descompone
+   el log-retorno mensual en **carry**, **roll-down**, **duración** (efecto del cambio
+   real de tasas) y **convexidad**; muestra la contribución acumulada 2016–2026.
+2. **Regímenes (HMM gaussiano)** — `nachometrics.RegimeModel` de 3 estados sobre nivel
+   (10a), pendiente (30a–3m) y cambio mensual. Estados ordenados por nivel de tasa;
+   entrega probabilidades suavizadas, matriz de transición y duración esperada.
+3. **Simulación HJB/Vasicek + VaR/CVaR** — OU con cambio de régimen
+   `dr = κ(θ_régimen − r)dt + σ_régimen dW` (el generador que aparece en la HJB de
+   valorización) calibrado al factor de nivel soberano; 60.000 trayectorias Monte-Carlo;
+   VaR y CVaR (95% y 99%) a 1, 3, 6, 12 y 60 meses, por clase y portafolio equiponderado.
+4. **Cashflows por clase** (bancario / corporativo), realizados y proyectados, desde las
+   tablas de desarrollo. La fuente traía errores de escala (potencias de 10); se corrigen
+   dividiendo cada flujo implausible hasta la banda económica. Proyección = cupón constante
+   (últimos 12m) hasta vencimiento + principal bullet.
+
+```bash
+export NACHOMETRICS_PATH=/ruta/a/nachometrics_unified_v0.7.0_final
+export FLUJOS_XLSX=/ruta/a/cmf_bonos_flujos_emisiones.xlsx
+python3 rf_analytics.py         # escribe outputs/rf_data.json
+# luego inyectar el JSON en renta_fija_analytics.html (placeholder /*__DATA__*/)
+```
+
 ## Salidas (`outputs/`)
 
 - `term_premium_acm_30y.csv` — serie mensual del premio a 30 años, 3 curvas.
