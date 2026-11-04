@@ -68,3 +68,78 @@ python3 acm_term_premium.py
 - `term_premium_acm_full.csv` — panel completo (todos los plazos).
 - `term_premium_acm_summary.csv` — último valor + estadísticos por curva.
 - `term_premium_acm_30y.png` — gráfico de las tres series a 30 años.
+
+---
+
+# Flujos de fondos mutuos por tipo de fondo (CMF)
+
+Script: `flujos_fondos_mutuos.py`. Descarga de la CMF la consulta mensual
+*Patrimonio, Rentabilidad, Partícipes y Valor de la Cuota de Fondos Mutuos*
+(`fm.fm_bpr.php`, todas las administradoras), que trae para cada mes una fila por
+tipo de fondo (Tipo 1 a 8) y el total del sistema.
+
+| Tipo | Descripción CMF |
+|---|---|
+| 1 | Deuda de corto plazo, duración ≤ 90 días (money market) |
+| 2 | Deuda de corto plazo, duración ≤ 365 días |
+| 3 | Deuda de mediano y largo plazo |
+| 4 | Mixto |
+| 5 | Instrumentos de capitalización (renta variable) |
+| 6 | Libre inversión |
+| 7 | Estructurado |
+| 8 | Dirigido a inversionistas calificados |
+
+## Cómo se calcula el flujo
+
+La CMF no publica aportes y rescates agregados por tipo (la cartola diaria por
+fondo, que sí los trae, está protegida con captcha). Por eso el **flujo neto** se
+calcula como la variación de patrimonio que no explica la rentabilidad del mes:
+
+    flujo_t = patrimonio_t − patrimonio_{t−1} · (1 + rentabilidad nominal_t)
+
+Positivo = entradas netas (aportes > rescates). Está en millones de pesos
+corrientes. El patrimonio de fondos en dólares/euros lo informa la CMF ya
+convertido a pesos, así que en esos fondos el flujo implícito recoge también parte
+del efecto cambiario.
+
+**Tipo 1 (money market)** tiene una estacionalidad fuerte de fin de mes (±2 a 7
+billones, por rescates de liquidez de empresas para remuneraciones e impuestos).
+Conviene leerlo en sumas de 12 meses o anuales, no mes a mes.
+
+## Resultado: últimos 12 meses (oct-2025 a sep-2026)
+
+| Tipo | Flujo neto 12m (miles de MM$) | % del patrimonio | Patrimonio sep-2026 (miles de MM$) |
+|---|---:|---:|---:|
+| 1 Deuda CP ≤ 90d | −1.152 | −4,6% | 25.026 |
+| 2 Deuda CP ≤ 365d | −1.130 | −11,7% | 9.696 |
+| 3 Deuda MP/LP | +1.490 | +10,7% | 13.910 |
+| 4 Mixto | +217 | +21,2% | 1.022 |
+| 5 Capitalización | +708 | +11,9% | 5.927 |
+| 6 Libre inversión | **+6.158** | +16,6% | 36.997 |
+| 7 Estructurado | −332 | −76,5% | 434 |
+| 8 Inv. calificados | +280 | +26,9% | 1.039 |
+| **Total sistema** | **+6.152** | +6,5% | 94.051 |
+
+En el último año la plata salió de los fondos de deuda de corto plazo (Tipos 1 y 2)
+y de los estructurados, y entró sobre todo a libre inversión (Tipo 6), a deuda de
+mediano y largo plazo (Tipo 3) y a renta variable (Tipo 5).
+
+## Reproducir
+
+```bash
+pip install pandas xlrd matplotlib
+python3 flujos_fondos_mutuos.py                       # 2010-01 .. mes anterior
+python3 flujos_fondos_mutuos.py --desde 2000-01 --hasta 2026-09
+```
+
+Las descargas quedan en `cache/cmf_fm_bpr/` (está en `.gitignore`). La CMF tarda
+~8 s por mes, así que la primera corrida completa demora ~25 min. Con `--refrescar`
+se vuelve a bajar todo; sirve porque la CMF corrige datos con reenvíos.
+
+## Salidas (`outputs/`)
+
+- `flujos_fondos_mutuos_por_tipo_mensual.csv` — flujo neto mensual (MM$), una columna por tipo.
+- `flujos_fondos_mutuos_por_tipo_anual.csv` — flujo neto anual por tipo.
+- `flujos_fondos_mutuos_por_tipo_long.csv` — panel completo: patrimonio, rentabilidad,
+  partícipes, efecto rentabilidad, flujo neto, flujo como % del patrimonio, variación de partícipes.
+- `flujos_fondos_mutuos_por_tipo.png` — suma móvil 12 meses (Tipo 1 y total arriba, Tipos 2–8 abajo).

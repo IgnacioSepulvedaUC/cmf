@@ -178,15 +178,22 @@ def main() -> None:
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
-        tipos_plot = [TIPOS[k] for k in range(1, 9) if TIPOS[k] in ancho.columns]
-        m = (ancho[tipos_plot] / 1e6).rolling(3, min_periods=1).sum()  # billones
-        fig, ax = plt.subplots(figsize=(12, 6))
-        m.plot(ax=ax, lw=1.4)
-        ax.axhline(0, color="k", lw=0.6)
-        ax.set_title("Fondos mutuos Chile — flujo neto implícito por tipo (suma móvil 3m)")
-        ax.set_ylabel("Billones de $ (10^12)")
-        ax.set_xlabel("")
-        ax.legend(fontsize=8, ncol=2)
+        # suma móvil 12m en billones de $ (10^12); Tipo 1 (money market) va en un
+        # panel aparte porque su estacionalidad de fin de mes domina la escala
+        m = (ancho / 1e6).rolling(12, min_periods=12).sum()
+        resto = [TIPOS[k] for k in range(2, 9) if TIPOS[k] in m.columns]
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+        m[[TIPOS[1], TIPOS[0]]].plot(ax=ax1, lw=1.6, color=["tab:blue", "k"])
+        m[resto].plot(ax=ax2, lw=1.4)
+        for ax in (ax1, ax2):
+            ax.axhline(0, color="k", lw=0.6)
+            ax.set_ylabel("Billones de $ (10^12)")
+            ax.set_xlabel("")
+            ax.legend(fontsize=8, ncol=2, loc="upper left")
+            ax.grid(alpha=0.3)
+        ax1.set_title(
+            "Fondos mutuos Chile — flujo neto implícito por tipo (suma móvil 12 meses)"
+        )
         fig.tight_layout()
         fig.savefig(OUT / "flujos_fondos_mutuos_por_tipo.png", dpi=130)
     except ImportError:
