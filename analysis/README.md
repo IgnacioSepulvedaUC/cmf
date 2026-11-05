@@ -68,3 +68,41 @@ python3 acm_term_premium.py
 - `term_premium_acm_full.csv` — panel completo (todos los plazos).
 - `term_premium_acm_summary.csv` — último valor + estadísticos por curva.
 - `term_premium_acm_30y.png` — gráfico de las tres series a 30 años.
+
+---
+
+# Carteras FFMM y AFP (`carteras_ffmm_afp_202606.xlsx`)
+
+Excel con la última cartera publicada de **fondos mutuos** (CMF) y de **fondos de
+pensiones** (Superintendencia de Pensiones), ambas al **30-06-2026**.
+
+| Hoja | Contenido |
+|---|---|
+| `Resumen` | FFMM por AGF y clase de activo; AFP por AFP × fondo (A–E), % extranjero oficial y 15 mayores emisores. Todo con fórmulas sobre las hojas de detalle. |
+| `FFMM_Fondos` | 440 fondos: valor de cartera, N° instrumentos, % nacional/extranjero y por clase de activo. |
+| `FFMM_Cartera` | 31.776 instrumentos (nemotécnico, emisor, país, tipo, clasificación de riesgo, duración, valor y % del fondo). |
+| `AFP_Fondos` | Activos por AFP × fondo (MM$ y MMUS$), % extranjero oficial y posiciones nacionales/extranjeras. |
+| `AFP_Cartera` | 27.173 posiciones (emisor, nemotécnico/ISIN en el extranjero, moneda, instrumentos, MM$, MMUS$, % del fondo). |
+| `AFP_Instrumento` | Desglose por instrumento de cada posición (% del fondo publicado por la SP). |
+| `AFP_Diversificacion` | Cuadro 1 de la SP: diversificación por instrumento, por AFP y tipo de fondo. |
+| `Glosario_AFP`, `Notas` | Códigos de instrumento, fuentes, unidades y advertencias. |
+
+Fuentes:
+
+- FFMM: CMF, Portal de Fondos Mutuos → *Carteras Fondos Mutuos* → anexo *Base de datos*
+  (<https://www.cmfchile.cl/portal/estadisticas/626/w4-article-91849.html>). Última
+  actualización trimestral publicada (datos a junio 2026). El valor (`val_cierr`) se
+  interpreta como millones de US$ (ver hoja `Notas`).
+- AFP: SP, Centro de Estadísticas → *Cartera de Inversiones* → *Versión completa en
+  formato Zip* (XML de la cartera desagregada, publicada 2026-07-09; la SP la publica
+  con 4 meses de rezago). Se usan los cuadros 1, 11 y 21.
+
+Reproducir (descargar ambos archivos desde los links de arriba):
+
+```bash
+python3 analysis/carteras_ffmm_afp.py --cmf carteras_ffmm.xlsx \
+    --sp cartera_afp.zip --out carteras_ffmm_afp_202606.xlsx
+```
+
+Las fórmulas quedan sin valores cacheados al salir de openpyxl; abrir en Excel
+(recalcula solo) o recalcular con LibreOffice.
